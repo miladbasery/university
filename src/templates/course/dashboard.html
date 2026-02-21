@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UniAdvisor | داشبورد</title>
+    
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <style>
+        /* --- متغیرها و تنظیمات پایه --- */
+        :root {
+            --bg-body: #050505;
+            --bg-card: rgba(30, 30, 30, 0.6);
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --primary: #ffffff;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --danger: #ef4444;
+            --radius-lg: 24px;
+            --sidebar-width: 260px;
+        }
+
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            margin: 0;
+            background-color: var(--bg-body);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.03) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255,255,255,0.03) 0%, transparent 20%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: var(--bg-card);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: var(--sidebar-width); height: 96vh;
+            position: fixed; right: 16px; top: 2vh;
+            border-radius: var(--radius-lg); padding: 24px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            z-index: 100; transition: transform 0.3s ease;
+        }
+
+        .brand { font-size: 1.4rem; font-weight: 900; margin-bottom: 32px; display: flex; align-items: center; gap: 12px; color: var(--primary); }
+        .user-mini-profile { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-glass); border-radius: 16px; margin-bottom: 24px; border: 1px solid var(--border-glass); }
+        .avatar-circle { width: 40px; height: 40px; background: #fff; color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        
+        .nav-menu { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 16px; color: var(--text-muted); text-decoration: none; transition: 0.2s; font-weight: 500; cursor: pointer; border: none; background: transparent; width: 100%; font-family: inherit; font-size: 1rem; }
+        .nav-item:hover, .nav-item.active { background: rgba(255, 255, 255, 0.1); color: var(--primary); }
+
+        /* --- Main Content --- */
+        .main-content {
+            flex: 1; margin-right: calc(var(--sidebar-width) + 32px);
+            padding: 32px 16px; padding-bottom: 120px; max-width: 1600px;
+        }
+
+        .page-header h1 { font-size: 2rem; margin: 0; font-weight: 800; }
+        .page-header p { color: var(--text-muted); margin-top: 8px; }
+
+        /* --- Hero Widget --- */
+        .hero-widget {
+            border-radius: var(--radius-lg); padding: 32px; margin-bottom: 48px;
+            position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 24px;
+        }
+        .hero-top { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; position: relative; z-index: 1; }
+        .suggestion-list { display: flex; flex-wrap: wrap; gap: 12px; position: relative; z-index: 1; }
+        .chip { background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); padding: 10px 18px; border-radius: 12px; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+
+        /* --- Grid & Cards --- */
+        .section-title { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; font-size: 1.2rem; color: var(--text-muted); }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+
+        .semester-card {
+            border-radius: var(--radius-lg); padding: 24px;
+            display: flex; flex-direction: column;
+            /* این خط خیلی مهمه: باعث میشه حتی اگر محتوا کم باشه باکس جمع نشه */
+            min-height: 200px; 
+            justify-content: flex-start;
+        }
+        
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border-glass);
+        }
+
+        /* --- Course Row Item (New Structure) --- */
+        .course-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* فاصله بین درس و دکمه حذف */
+            padding: 8px;
+            border-radius: 12px;
+            margin-bottom: 4px;
+            transition: background 0.2s;
+        }
+        .course-wrapper:hover { background: rgba(255,255,255,0.04); }
+
+        /* لیبل چک‌باکس کل فضا را می‌گیرد تا راحت کلیک شود */
+        .course-label {
+            display: flex; align-items: center;
+            cursor: pointer;
+            flex-grow: 1; /* پر کردن فضای خالی */
+        }
+
+        .custom-checkbox {
+            width: 20px; height: 20px;
+            border: 2px solid #555; border-radius: 6px;
+            margin-left: 14px; display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; flex-shrink: 0;
+        }
+        input[type="checkbox"] { display: none; }
+        input[type="checkbox"]:checked + .custom-checkbox { background: #fff; border-color: #fff; }
+        input[type="checkbox"]:checked + .custom-checkbox::after { content: '✓'; color: #000; font-size: 14px; font-weight: bold; }
+        
+        /* استایل متن درس */
+        .course-info { display: flex; flex-direction: column; }
+        .c-name { font-size: 0.95rem; transition: 0.2s; color: var(--text-main); }
+        .c-unit { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* وقتی تیک خورد، فقط ظاهر عوض شه، حذف نشه */
+        input[type="checkbox"]:checked ~ .course-info .c-name {
+            text-decoration: line-through;
+            opacity: 0.5; /* کم رنگ شدن به جای حذف */
+        }
+        
+        /* دکمه حذف */
+        .delete-btn {
+            background: transparent; border: none; color: var(--danger);
+            cursor: pointer; padding: 8px; border-radius: 8px;
+            opacity: 0.6; transition: 0.2s; display: flex;
+        }
+        .delete-btn:hover { opacity: 1; background: rgba(239, 68, 68, 0.1); }
+
+        /* --- FAB & Modal --- */
+        .fab-save { position: fixed; bottom: 32px; left: 32px; background: #fff; color: #000; padding: 16px 32px; border-radius: 50px; font-weight: 800; display: flex; align-items: center; gap: 10px; border: none; cursor: pointer; z-index: 900; transition: transform 0.2s; box-shadow: 0 0 40px rgba(255,255,255,0.15); }
+        .fab-save:hover { transform: scale(1.05); }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: #111; border: 1px solid #333; width: 100%; max-width: 400px; border-radius: var(--radius-lg); padding: 32px; }
+        .form-input { width: 100%; background: #222; border: 1px solid #333; padding: 14px; border-radius: 12px; color: #fff; font-family: inherit; margin-bottom: 16px; }
+        .btn-primary { width: 100%; background: #fff; color: #000; padding: 14px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; height: auto; top: auto; bottom: 0; right: 0; left: 0; border-radius: 0; padding: 12px 24px; flex-direction: row; background: rgba(10, 10, 10, 0.95); }
+            .brand, .user-mini-profile { display: none; }
+            .nav-menu { flex-direction: row; width: 100%; justify-content: space-around; }
+            .nav-item { flex-direction: column; gap: 4px; padding: 8px; font-size: 0.7rem; width: auto; }
+            .nav-item i { font-size: 1.4rem; }
+            .main-content { margin-right: 0; padding: 20px 20px 100px 20px; }
+            .grid-container { grid-template-columns: 1fr; }
+            .fab-save { bottom: 85px; left: 20px; padding: 12px 24px; font-size: 0.9rem; }
+        }
+        /* --- Custom Scrollbar --- */
+        
+        /* برای مرورگرهای مبتنی بر Webkit (کروم، سافاری، اج جدید) */
+        ::-webkit-scrollbar {
+            width: 8px; /* عرض اسکرول‌بار عمودی */
+            height: 8px; /* ارتفاع اسکرول‌بار افقی */
+        }
+
+        /* پس‌زمینه مسیر اسکرول (Track) */
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02); 
+            border-radius: 4px;
+        }
+
+        /* دستگیره اسکرول (Thumb) */
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15); 
+            border-radius: 4px;
+            border: 1px solid rgba(0, 0, 0, 0.1); /* حاشیه برای تمایز */
+        }
+
+        /* حالت هاور روی دستگیره */
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3); 
+        }
+
+        /* برای فایرفاکس (Firefox) */
+        * {
+            scrollbar-width: thin; /* باریک */
+            scrollbar-color: rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0); /* رنگ دستگیره و پس‌زمینه */
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar glass">
+        <div>
+            <div class="brand"><i class="ri-graduation-cap-fill"></i><span>UniAdvisor</span></div>
+            <div class="user-mini-profile">
+    <div class="avatar-circle" style="overflow: hidden; padding: 0;">
+        {% if user.avatar %}
+            <img src="{{ user.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+        {% else %}
+            {{ user.username|make_list|first|upper }}
+        {% endif %}
+    </div>
+    <div style="font-size: 0.9rem;">
+        <div style="font-weight: bold;">{{ user.username }}</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">{{ user.university_name }}</div>
+    </div>
+</div>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#" class="nav-item active"><i class="ri-layout-grid-fill"></i> داشبورد</a></li>
+            <li><a href="{% url 'profile' %}" class="nav-item"><i class="ri-user-settings-line"></i> پروفایل</a></li>
+            <li><button type="button" class="nav-item" onclick="openModal()"><i class="ri-add-circle-line"></i> افزودن درس</button></li>
+            <li style="margin-top: auto;"><button type="submit" form="logoutForm" class="nav-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> خروج</button></li>
+        </ul>
+    </aside>
+
+    <main class="main-content fade-in">
+        <div class="page-header"><h1>داشبورد تحصیلی</h1><p>برنامه‌ریزی هوشمند، انتخاب واحد دقیق.</p></div>
+
+        <div class="hero-widget glass">
+            <div class="hero-top">
+                <div><h2 style="margin: 0; font-size: 1.5rem;">پیشنهاد هوشمند سیستم</h2></div>
+                <div style="background: #fff; color: #000; padding: 8px 16px; border-radius: 50px; font-weight: 800;">مجموع: {{ total_units }} واحد</div>
+            </div>
+            <div class="suggestion-list">
+                {% if suggested_courses %}
+                    {% for course in suggested_courses %}
+                        <div class="chip"><i class="ri-book-mark-line"></i><span>{{ course.name }}</span><span style="opacity: 0.5;">({{ course.units }})</span></div>
+                    {% endfor %}
+                {% else %}
+                    <div style="color: var(--text-muted);">هیچ درسی برای پیشنهاد وجود ندارد.</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <form method="post" id="mainForm">
+            {% csrf_token %}
+            <input type="hidden" name="save_changes" value="1">
+            
+            <div class="section-title"><i class="ri-git-branch-line"></i><span>مسیر تحصیلی شما</span></div>
+
+            <div class="grid-container">
+                {% for semester, courses in semester_data %}
+                <div class="semester-card glass">
+                    <div class="card-header"><h3 style="margin:0;">ترم {{ semester }}</h3><span style="background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:6px; font-size:0.8rem;">{{ courses|length }} درس</span></div>
+                    
+                    <div>
+                        {% for course in courses %}
+                        <div class="course-wrapper">
+                            <label class="course-label" for="c_{{ course.id }}">
+                                <input type="checkbox" name="passed_courses" value="{{ course.id }}" id="c_{{ course.id }}" {% if course in passed_courses %}checked{% endif %}>
+                                <span class="custom-checkbox"></span>
+                                <div class="course-info">
+                                    <span class="c-name">{{ course.name }}</span>
+                                    <span class="c-unit">{{ course.units }} واحد</span>
+                                </div>
+                            </label>
+
+                            {% if course.creator == user %}
+                                <button type="submit" form="deleteForm{{ course.id }}" class="delete-btn" title="حذف درس">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <button type="submit" class="fab-save"><i class="ri-save-3-fill"></i> ذخیره تغییرات</button>
+        </form>
+    </main>
+
+    {% for semester, courses in semester_data %}
+        {% for course in courses %}
+            {% if course.creator == user %}
+                <form id="deleteForm{{ course.id }}" method="post" style="display:none;">
+                    {% csrf_token %}
+                    <input type="hidden" name="delete_course" value="1">
+                    <input type="hidden" name="course_id" value="{{ course.id }}">
+                </form>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+
+    <form id="logoutForm" action="{% url 'logout' %}" method="post" style="display: none;">{% csrf_token %}</form>
+
+    <div id="addModal" class="modal-overlay">
+        <div class="modal-content glass">
+            <h3 style="margin-top: 0; margin-bottom: 24px;">افزودن درس شخصی</h3>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="add_custom_course" value="1">
+                <label style="color:#aaa; font-size:0.9rem;">نام درس</label>
+                <input type="text" name="course_name" class="form-input" required placeholder="مثلاً: کارگاه عکاسی">
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;"><label style="color:#aaa; font-size:0.9rem;">واحد</label><input type="number" name="course_units" class="form-input" value="2"></div>
+                    <div style="flex:1;"><label style="color:#aaa; font-size:0.9rem;">ترم</label><input type="number" name="course_semester" class="form-input" placeholder="3"></div>
+                </div>
+                <label style="color:#aaa; font-size:0.9rem;">پیش‌نیاز</label>
+                <select name="course_prereq" class="form-input" style="cursor:pointer;"><option value="none">-- بدون پیش‌نیاز --</option>{% for c in all_courses_list %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="button" class="btn-primary" style="background:transparent; border:1px solid #333; color:#fff;" onclick="closeModal()">لغو</button>
+                    <button type="submit" class="btn-primary">افزودن</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% if show_setup_modal %}
+<div class="setup-overlay">
+    <div class="setup-box glass">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <i class="ri-rocket-2-fill" style="font-size: 3rem; color: #fff;"></i>
+            <h2 style="margin: 10px 0;">خوش آمدید!</h2>
+            <p style="color: var(--text-muted);">برای شروع، مسیر تحصیلی خود را انتخاب کنید.</p>
+        </div>
+
+        <div class="setup-options">
+            <form method="post" style="flex: 1;">
+                {% csrf_token %}
+                <input type="hidden" name="setup_choice" value="computer">
+                <button type="submit" class="setup-card">
+                    <div class="icon-bg"><i class="ri-computer-line"></i></div>
+                    <h3>مهندسی کامپیوتر</h3>
+                    <p>استفاده از چارت درسی آماده دانشگاه (پیش‌فرض)</p>
+                </button>
+            </form>
+
+            <form method="post" style="flex: 1;">
+                {% csrf_token %}
+                <input type="hidden" name="setup_choice" value="custom">
+                <button type="submit" class="setup-card">
+                    <div class="icon-bg" style="background: rgba(255,255,255,0.1);"><i class="ri-edit-2-line"></i></div>
+                    <h3>ساخت دستی</h3>
+                    <p>شروع با داشبورد خالی و افزودن درس‌ها توسط خودم</p>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* استایل‌های مخصوص پاپ‌آپ خوش‌آمدگویی */
+    .setup-overlay {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.9);
+        backdrop-filter: blur(15px);
+        z-index: 9999; /* بالاتر از همه */
+        display: flex; justify-content: center; align-items: center;
+        padding: 20px;
+    }
+    .setup-box {
+        width: 100%; max-width: 700px;
+        padding: 40px; border-radius: 30px;
+        background: #000; border: 1px solid #333;
+    }
+    .setup-options {
+        display: flex; gap: 20px;
+        flex-wrap: wrap;
+    }
+    .setup-card {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 20px; padding: 30px 20px;
+        text-align: center; cursor: pointer;
+        transition: 0.3s; width: 100%;
+        display: flex; flex-direction: column; align-items: center;
+        color: white; font-family: inherit;
+    }
+    .setup-card:hover {
+        background: #fff; color: #000;
+        transform: translateY(-5px);
+    }
+    .setup-card:hover p { color: #444; }
+    .setup-card h3 { margin: 15px 0 10px 0; font-size: 1.2rem; }
+    .setup-card p { font-size: 0.9rem; color: #aaa; margin: 0; line-height: 1.5; }
+    
+    .icon-bg {
+        width: 60px; height: 60px;
+        background: #3b82f6; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.8rem; margin-bottom: 10px;
+    }
+</style>
+{% endif %}
+
+    <script>
+        function openModal() { document.getElementById('addModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('addModal').style.display = 'none'; }
+        document.getElementById('addModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+
+        // --- بخش جدید: بررسی URL برای باز کردن خودکار مودال ---
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('open_modal')) {
+                openModal();
+                // پاک کردن پارامتر از آدرس (برای تمیزی)
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        });
+    </script>
+</body>
+</html>

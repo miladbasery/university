@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UniAdvisor | تنظیمات پروفایل</title>
+    
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <style>
+        /* --- 1. Variables & Base --- */
+        :root {
+            --bg-body: #050505;
+            --bg-card: rgba(30, 30, 30, 0.6);
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --primary: #ffffff;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --danger: #ef4444;
+            --success: #10b981;
+            --radius-lg: 24px;
+            --sidebar-width: 260px;
+        }
+
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            margin: 0; background-color: var(--bg-body);
+            background-image: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.03) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(255,255,255,0.03) 0%, transparent 20%);
+            color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden;
+        }
+
+        .glass {
+            background: var(--bg-card); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-glass); box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 2. Sidebar (Desktop) --- */
+        .sidebar {
+            width: var(--sidebar-width); height: 96vh; position: fixed; right: 16px; top: 2vh;
+            border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; justify-content: space-between; z-index: 100;
+        }
+        .brand { font-size: 1.4rem; font-weight: 900; margin-bottom: 32px; display: flex; align-items: center; gap: 12px; color: var(--primary); }
+        .user-mini-profile { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-glass); border-radius: 16px; margin-bottom: 24px; border: 1px solid var(--border-glass); }
+        .avatar-circle { width: 40px; height: 40px; background: #fff; color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; overflow: hidden; }
+        .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .nav-menu { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 16px; color: var(--text-muted); text-decoration: none; transition: 0.2s; font-weight: 500; cursor: pointer; border: none; background: transparent; width: 100%; font-family: inherit; font-size: 1rem; }
+        .nav-item:hover, .nav-item.active { background: rgba(255, 255, 255, 0.1); color: var(--primary); }
+
+        /* --- 3. Main Content --- */
+        .main-content {
+            flex: 1; 
+            margin-right: calc(var(--sidebar-width) + 32px); 
+            padding: 32px 16px; 
+            /* اینجا تغییر کرد: عرض رو بیشتر کردیم تا فرم کامل کشیده بشه */
+            max-width: 1600px; 
+            width: 100%;
+            padding-bottom: 120px;
+        }
+        .page-header h1 { font-size: 2rem; margin: 0; font-weight: 800; }
+        .page-header p { color: var(--text-muted); margin-top: 8px; }
+
+        /* --- 4. Profile Grid --- */
+        .settings-grid { 
+            display: grid; 
+            /* تغییر: گرید رو تنظیم کردیم که تو دسکتاپ عریض باشه */
+            grid-template-columns: 1fr; 
+            gap: 30px; 
+            margin-top: 40px; 
+        }
+        .settings-card { border-radius: var(--radius-lg); padding: 32px; width: 100%; }
+        .card-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-glass); padding-bottom: 15px; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; }
+        .form-input { width: 100%; background: #1a1a1a; border: 1px solid var(--border-glass); padding: 14px; border-radius: 12px; color: #fff; font-family: inherit; font-size: 1rem; transition: 0.3s; }
+        .form-input:focus { border-color: #fff; background: #000; }
+        
+        .btn-primary { width: 100%; background: #fff; color: #000; padding: 14px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 10px; font-size: 1rem; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.1); }
+        .btn-outline { background: transparent; border: 1px solid #fff; color: #fff; }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); }
+
+        /* Messages */
+        .messages { list-style: none; padding: 0; margin-bottom: 20px; }
+        .messages li { padding: 15px; border-radius: 12px; margin-bottom: 10px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+        .messages .success { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid var(--success); }
+        .messages .error { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); }
+        .helptext { font-size: 0.8rem; color: #666; margin-top: 5px; display: block; }
+
+        /* Avatar Upload Section */
+        .avatar-upload { text-align: center; margin-bottom: 30px; }
+        .avatar-preview { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; margin: 0 auto 15px; border: 3px solid #fff; box-shadow: 0 5px 20px rgba(0,0,0,0.5); background: #111; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2rem; font-weight: bold; }
+        .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* --- 5. Mobile Responsive --- */
+        @media (max-width: 768px) {
+            .sidebar { 
+                width: 100%; height: auto; top: auto; bottom: 0; right: 0; left: 0; 
+                border-radius: 0; padding: 12px 24px; flex-direction: row; 
+                background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(20px); 
+                border-top: 1px solid var(--border-glass); 
+            }
+            .brand, .user-mini-profile { display: none; }
+            .nav-menu { flex-direction: row; width: 100%; justify-content: space-around; }
+            .nav-item { flex-direction: column; gap: 4px; padding: 8px; font-size: 0.7rem; width: auto; }
+            .nav-item i { font-size: 1.4rem; }
+            .main-content { margin-right: 0; padding: 20px 20px 100px 20px; }
+        }
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; border: 1px solid rgba(0, 0, 0, 0.1); }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+        * { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0); }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar glass">
+        <div>
+            <div class="brand"><i class="ri-graduation-cap-fill"></i><span>UniAdvisor</span></div>
+            <div class="user-mini-profile">
+                <div class="avatar-circle">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}" alt="avatar">
+                    {% else %}
+                        {{ user.username|make_list|first|upper }}
+                    {% endif %}
+                </div>
+                <div style="font-size: 0.9rem;">
+                    <div style="font-weight: bold;">{{ user.username }}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">{{ user.university_name }}</div>
+                </div>
+            </div>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="{% url 'dashboard' %}" class="nav-item"><i class="ri-layout-grid-line"></i> داشبورد</a></li>
+            <li><a href="#" class="nav-item active"><i class="ri-user-settings-fill"></i> پروفایل</a></li>
+            <li>
+                <a href="{% url 'dashboard' %}?open_modal=1" class="nav-item">
+                    <i class="ri-add-circle-line"></i> افزودن درس
+                </a>
+            </li>
+            <li style="margin-top: auto;"><button type="submit" form="logoutForm" class="nav-item" style="color: #ef4444;"><i class="ri-logout-box-r-line"></i> خروج</button></li>
+        </ul>
+    </aside>
+
+    <main class="main-content fade-in">
+        <div class="page-header">
+            <h1>تنظیمات حساب کاربری</h1>
+            <p>اطلاعات کاربری خود را ویرایش کنید یا رمز عبور خود را تغییر دهید.</p>
+        </div>
+
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">
+                    {% if message.tags == 'success' %}<i class="ri-checkbox-circle-line"></i>{% else %}<i class="ri-error-warning-line"></i>{% endif %}
+                    {{ message }}
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <div class="settings-grid">
+            
+            <div class="settings-card glass">
+                <div class="card-title"><i class="ri-edit-2-line"></i> ویرایش مشخصات</div>
+                
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="avatar-upload">
+                        <div class="avatar-preview">
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar.url }}" id="avatar-preview-img">
+                            {% else %}
+                                {{ user.username|make_list|first|upper }}
+                            {% endif %}
+                        </div>
+                        
+                        <div style="position: relative; width: 100%; max-width: 200px; margin: 0 auto;">
+                            {% for field in info_form %}
+                                {% if field.name == 'avatar' %}
+                                    <label for="{{ field.id_for_label }}" style="cursor: pointer; color: var(--text-muted); border: 1px dashed var(--border-glass); padding: 10px; border-radius: 12px; display: block; width: 100%; font-size: 0.9rem; transition: 0.3s;">
+                                        <i class="ri-upload-cloud-line"></i> انتخاب تصویر جدید
+                                    </label>
+                                    <input type="file" name="{{ field.name }}" id="{{ field.id_for_label }}" style="display: none;" onchange="previewImage(event)">
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {% for field in info_form %}
+                        {% if field.name != 'avatar' %}
+                        <div class="form-group">
+                            <label class="form-label">
+                                {% if field.name == 'username' %}نام کاربری{% elif field.name == 'university_name' %}نام دانشگاه{% else %}{{ field.label }}{% endif %}
+                            </label>
+                            <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" value="{{ field.value|default:'' }}" class="form-input" {% if field.field.required %}required{% endif %}>
+                            {% if field.errors %}<div style="color:var(--danger); font-size:0.8rem; margin-top:5px;">{{ field.errors.0 }}</div>{% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <button type="submit" name="update_info" class="btn-primary">ذخیره تغییرات</button>
+                </form>
+            </div>
+
+            <div class="settings-card glass">
+                <div class="card-title"><i class="ri-lock-password-line"></i> تغییر رمز عبور</div>
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in password_form %}
+                    <div class="form-group">
+                        <label class="form-label">
+                            {% if field.label == 'Old password' %}رمز عبور فعلی{% elif field.label == 'New password' %}رمز عبور جدید{% elif field.label == 'New password confirmation' %}تکرار رمز عبور جدید{% else %}{{ field.label }}{% endif %}
+                        </label>
+                        <input type="password" name="{{ field.name }}" class="form-input" {% if field.field.required %}required{% endif %}>
+                        {% if field.errors %}<div style="color:var(--danger); font-size:0.8rem; margin-top:5px;">{{ field.errors.0 }}</div>{% endif %}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" name="change_password" class="btn-primary btn-outline">تغییر رمز</button>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <form id="logoutForm" action="{% url 'logout' %}" method="post" style="display: none;">{% csrf_token %}</form>
+
+    <script>
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function(){
+                const output = document.getElementById('avatar-preview-img');
+                const container = document.querySelector('.avatar-preview');
+                
+                // اگر قبلا عکس بوده عوضش کن، اگر نبوده تگ img بساز
+                if(output) {
+                    output.src = reader.result;
+                } else {
+                    container.innerHTML = `<img src="${reader.result}" id="avatar-preview-img" style="width: 100%; height: 100%; object-fit: cover;">`;
+                }
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+
+</body>
+</html>
